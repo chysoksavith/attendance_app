@@ -25,14 +25,19 @@ class ProfileScreen extends StatelessWidget {
               CircleAvatar(
                 radius: 40,
                 backgroundColor: AppColors.primary.withAlpha(25),
-                child: Text(
-                  user?.initials ?? '?',
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 24,
-                  ),
-                ),
+                backgroundImage: (user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty)
+                    ? NetworkImage(user.avatarUrl!)
+                    : null,
+                child: (user?.avatarUrl == null || user!.avatarUrl!.isEmpty)
+                    ? Text(
+                        user?.initials ?? '?',
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 24,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(height: 12),
               Text(
@@ -90,6 +95,26 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
+
+              if (user != null && user.attachments.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                _MenuGroup(
+                  children: [
+                    for (final attachment in user.attachments)
+                      _MenuItem(
+                        icon: Icons.attach_file_rounded,
+                        label: attachment.fileName,
+                        trailing: attachment.size != null 
+                            ? '${(attachment.size! / 1024).toStringAsFixed(1)} KB' 
+                            : 'Unknown size',
+                        onTap: () {
+                          // TODO: View or download attachment
+                        },
+                      ),
+                  ],
+                ),
+              ],
+
 
               const SizedBox(height: 28),
 

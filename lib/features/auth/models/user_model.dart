@@ -1,3 +1,5 @@
+import 'attachment_model.dart';
+
 /// Mirrors the ERP's `Api\UserResource` response shape.
 class UserModel {
   final int id;
@@ -13,6 +15,7 @@ class UserModel {
   final bool isActive;
   final bool hasMobileAccess;
   final String? birthDate;
+  final List<AttachmentModel> attachments;
 
   const UserModel({
     required this.id,
@@ -28,6 +31,7 @@ class UserModel {
     this.isActive = true,
     this.hasMobileAccess = true,
     this.birthDate,
+    this.attachments = const [],
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +49,10 @@ class UserModel {
       isActive: json['is_active'] as bool? ?? true,
       hasMobileAccess: json['has_mobile_access'] as bool? ?? true,
       birthDate: json['birth_date'] as String?,
+      attachments: (json['attachments'] as List<dynamic>?)
+              ?.map((e) => AttachmentModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
@@ -63,6 +71,7 @@ class UserModel {
       'is_active': isActive,
       'has_mobile_access': hasMobileAccess,
       'birth_date': birthDate,
+      'attachments': attachments.map((e) => e.toJson()).toList(),
     };
   }
 
