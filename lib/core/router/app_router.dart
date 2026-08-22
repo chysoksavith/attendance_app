@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/otp_screen.dart';
 import '../../features/auth/screens/splash_screen.dart';
-import '../../features/home/screens/home_screen.dart';
+import '../../features/home/screens/main_shell.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -30,7 +30,7 @@ class AppRouter {
 
       case AppRoutes.home:
         return MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
+          builder: (_) => const MainShell(),
           settings: settings,
         );
 

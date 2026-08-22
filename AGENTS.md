@@ -151,6 +151,7 @@ This app connects to the same ERP backend as the web admin panel.
 - **Token refresh**: `POST /api/v1/refresh-token` (auth required)
 - **Logout**: `POST /api/v1/logout` (auth required)
 - Token stored securely in device (FlutterSecureStorage or equivalent).
+- **Mobile access gate**: backend checks `users.has_mobile_access` (boolean) at login. If `false`, returns 403 "Mobile access is not enabled for your account." Admin toggles this per user.
 - See ERP: `obsidian-vault/04-Controllers-Services/AuthController-API.md`
 
 ### Attendance API (planned — to be built on ERP side)

@@ -11,6 +11,7 @@ class UserModel {
   final String? phoneNumber;
   final String? userType;
   final bool isActive;
+  final bool hasMobileAccess;
   final String? birthDate;
 
   const UserModel({
@@ -25,6 +26,7 @@ class UserModel {
     this.phoneNumber,
     this.userType,
     this.isActive = true,
+    this.hasMobileAccess = true,
     this.birthDate,
   });
 
@@ -41,6 +43,7 @@ class UserModel {
       phoneNumber: json['phone_number'] as String?,
       userType: json['user_type'] as String?,
       isActive: json['is_active'] as bool? ?? true,
+      hasMobileAccess: json['has_mobile_access'] as bool? ?? true,
       birthDate: json['birth_date'] as String?,
     );
   }
@@ -58,6 +61,7 @@ class UserModel {
       'phone_number': phoneNumber,
       'user_type': userType,
       'is_active': isActive,
+      'has_mobile_access': hasMobileAccess,
       'birth_date': birthDate,
     };
   }
