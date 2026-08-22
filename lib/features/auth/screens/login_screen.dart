@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/router/app_router.dart';
+import '../../../core/router/app_routes.dart';
 import '../widgets/login_form.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -15,54 +17,71 @@ class LoginScreen extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Logo / Branding
+                  const _AppBranding(),
                   const SizedBox(height: 40),
-                  Container(
-                    width: 72,
-                    height: 72,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Icon(
-                      Icons.badge_outlined,
-                      color: Colors.white,
-                      size: 36,
-                    ),
+
+                  // Login form
+                  LoginForm(
+                    onLoginSuccess: () {
+                      AppRouter.navigateToAndRemoveUntil(
+                        context,
+                        AppRoutes.home,
+                      );
+                    },
+                    onOtpRequired: () {
+                      AppRouter.navigateTo(context, AppRoutes.otpVerify);
+                    },
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Welcome back',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Sign in to your company account',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                  ),
-                  const SizedBox(height: 32),
-                  const LoginForm(),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Having trouble signing in? Contact HR/Admin',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textMuted,
-                        ),
-                  ),
-                  const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AppBranding extends StatelessWidget {
+  const _AppBranding();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // App icon
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withAlpha(25),
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: const Icon(
+            Icons.fingerprint_rounded,
+            size: 40,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'Attendance',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Sign in to continue',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+        ),
+      ],
     );
   }
 }
