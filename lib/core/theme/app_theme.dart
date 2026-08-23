@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const primary = Color(0xFF2E5AAC);
+  static const primary = Color(0xFF2563EB);
+  static const primaryDark = Color(0xFF1D4ED8);
+  static const primaryLight = Color(0xFFEFF6FF);
   static const background = Color(0xFFF7F8FA);
   static const cardBackground = Colors.white;
   static const inputFill = Color(0xFFF9FAFB);
