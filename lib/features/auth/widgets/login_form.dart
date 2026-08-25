@@ -5,6 +5,8 @@ import '../../../core/widgets/app_text_field.dart';
 import '../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
 
+import '../../../core/widgets/app_toast.dart';
+
 class LoginForm extends StatefulWidget {
   final VoidCallback onLoginSuccess;
   final VoidCallback onOtpRequired;
@@ -46,12 +48,16 @@ class _LoginFormState extends State<LoginForm> {
     if (!mounted) return;
 
     if (success) {
+      AppToast.show(context, 'Signed in successfully');
       widget.onLoginSuccess();
     } else if (auth.verificationToken != null) {
-      // OTP required — navigate to OTP screen
+      AppToast.show(context, 'Verification code sent to your email');
       widget.onOtpRequired();
+    } else {
+      if (auth.error != null) {
+        AppToast.show(context, auth.error!, isError: true);
+      }
     }
-    // If neither, error is shown via the provider state
   }
 
   @override
@@ -63,12 +69,6 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Error banner
-              if (auth.error != null && !auth.hasValidationFieldErrors) ...[
-                _ErrorBanner(message: auth.error!),
-                const SizedBox(height: 16),
-              ],
-
               // Identifier field (email or phone)
               AppTextField(
                 label: 'Email or Phone',
@@ -76,6 +76,7 @@ class _LoginFormState extends State<LoginForm> {
                 icon: Icons.person_outline_rounded,
                 controller: _identifierController,
                 keyboardType: TextInputType.emailAddress,
+                errorText: auth.fieldErrors['email']?.first,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Please enter your email or phone number';
@@ -96,6 +97,7 @@ class _LoginFormState extends State<LoginForm> {
                 icon: Icons.lock_outline_rounded,
                 controller: _passwordController,
                 obscureText: _obscurePassword,
+                errorText: auth.fieldErrors['password']?.first,
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword
@@ -136,43 +138,4 @@ class _LoginFormState extends State<LoginForm> {
   }
 }
 
-extension on AuthProvider {
-  bool get hasValidationFieldErrors => fieldErrors.isNotEmpty;
-}
 
-class _ErrorBanner extends StatelessWidget {
-  final String message;
-
-  const _ErrorBanner({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.error.withAlpha(20),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.error.withAlpha(60)),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.error_outline_rounded,
-            color: AppColors.error,
-            size: 20,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -15,6 +15,7 @@ class AppTextField extends StatelessWidget {
   final int? minLines;
   final bool enabled;
   final String? initialValue;
+  final String? errorText;
 
   const AppTextField({
     super.key,
@@ -32,6 +33,7 @@ class AppTextField extends StatelessWidget {
     this.minLines,
     this.enabled = true,
     this.initialValue,
+    this.errorText,
   });
 
   @override
@@ -58,6 +60,7 @@ class AppTextField extends StatelessWidget {
             hintText: hint,
             prefixIcon: icon != null ? Icon(icon, size: 20) : prefixIcon,
             suffixIcon: suffixIcon,
+            errorText: errorText,
           ),
           validator: validator,
           onChanged: onChanged,

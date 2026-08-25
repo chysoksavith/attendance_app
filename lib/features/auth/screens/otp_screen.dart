@@ -7,6 +7,8 @@ import '../../../core/widgets/app_button.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/otp_input.dart';
 
+import '../../../core/widgets/app_toast.dart';
+
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
 
@@ -54,9 +56,7 @@ class _OtpScreenState extends State<OtpScreen> {
   Future<void> _handleVerify() async {
     final otp = _otpController.text.trim();
     if (otp.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the 6-digit code')),
-      );
+      AppToast.show(context, 'Please enter the 6-digit code', isError: true);
       return;
     }
 
@@ -66,7 +66,12 @@ class _OtpScreenState extends State<OtpScreen> {
     if (!mounted) return;
 
     if (success) {
+      AppToast.show(context, 'Signed in successfully');
       AppRouter.navigateToAndRemoveUntil(context, AppRoutes.home);
+    } else {
+      if (auth.error != null) {
+        AppToast.show(context, auth.error!, isError: true);
+      }
     }
   }
 
@@ -80,9 +85,11 @@ class _OtpScreenState extends State<OtpScreen> {
 
     if (sent) {
       _startResendTimer();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('A new code has been sent')),
-      );
+      AppToast.show(context, 'A new code has been sent');
+    } else {
+      if (auth.error != null) {
+        AppToast.show(context, auth.error!, isError: true);
+      }
     }
   }
 
@@ -136,12 +143,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   const SizedBox(height: 32),
 
-                  // Error
-                  if (auth.error != null) ...[
-                    _OtpError(message: auth.error!),
-                    const SizedBox(height: 16),
-                  ],
-
                   // OTP Input
                   OtpInput(
                     controller: _otpController,
@@ -193,34 +194,3 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 }
 
-class _OtpError extends StatelessWidget {
-  final String message;
-  const _OtpError({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.error.withAlpha(20),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.error.withAlpha(60)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline_rounded, color: AppColors.error, size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
