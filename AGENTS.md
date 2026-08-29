@@ -35,14 +35,14 @@ See `../erp-system/AGENTS.md` §3-4 and `../erp-system/obsidian-vault/04-Control
 |-------|-----------|---------|
 | Framework | Flutter | SDK ^3.12.2 |
 | Language | Dart | ^3.12.2 |
-| State Management | Riverpod (planned) | — |
-| HTTP Client | Dio (planned) | — |
-| Local Storage | SharedPreferences / Hive (planned) | — |
+| State Management | Provider | ^6.1.2 |
+| HTTP Client | Custom client wrapping `package:http` | ^1.2.2 |
+| Local Storage | FlutterSecureStorage (TokenStorage) | ^9.2.3 |
 | Routing | Manual (`onGenerateRoute`) | built-in |
 | Fonts | Google Fonts (Inter) | ^8.2.0 |
 | Icons | Material Icons | built-in |
 
-**Current status**: scaffold phase. Auth UI + home screen are built. Networking, state management, and feature logic are not yet wired.
+**Current status**: scaffold phase. Auth UI (login + OTP screens) and home screen are built. Networking and state management are wired using Provider and http.
 
 ---
 
@@ -218,16 +218,7 @@ This app connects to the same ERP backend as the web admin panel.
 Add these when actually implementing the features, not before:
 
 ```yaml
-# State management
-flutter_riverpod: ^2.6.0
-riverpod_annotation: ^2.6.0
-
-# Networking
-dio: ^5.7.0
-retrofit: ^4.4.0  # optional, for typed API clients
-
-# Storage
-flutter_secure_storage: ^9.2.0
+# Local Cache Storage (if Hive or SharedPreferences is needed for caching)
 shared_preferences: ^2.3.0
 
 # Location
