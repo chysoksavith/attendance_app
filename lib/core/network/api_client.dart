@@ -11,11 +11,8 @@ class ApiClient {
   final http.Client _client;
   final TokenStorage _tokenStorage;
 
-  ApiClient({
-    http.Client? client,
-    required TokenStorage tokenStorage,
-  })  : _client = client ?? http.Client(),
-        _tokenStorage = tokenStorage;
+  ApiClient({http.Client? client, required this._tokenStorage})
+    : _client = client ?? http.Client();
 
   // -- Public API ------------------------------------------------------------
 
@@ -110,8 +107,9 @@ class ApiClient {
     if (rawErrors != null) {
       for (final entry in rawErrors.entries) {
         if (entry.value is List) {
-          errors[entry.key] =
-              (entry.value as List).map((e) => e.toString()).toList();
+          errors[entry.key] = (entry.value as List)
+              .map((e) => e.toString())
+              .toList();
         }
       }
     }

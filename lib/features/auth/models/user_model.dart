@@ -49,7 +49,8 @@ class UserModel {
       isActive: json['is_active'] as bool? ?? true,
       hasMobileAccess: json['has_mobile_access'] as bool? ?? true,
       birthDate: json['birth_date'] as String?,
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.map((e) => AttachmentModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],

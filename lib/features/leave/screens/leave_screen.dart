@@ -17,15 +17,15 @@ class LeaveScreen extends StatelessWidget {
               Text(
                 'Leave',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Manage your leave requests',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                  color: AppColors.textSecondary,
+                ),
               ),
 
               const SizedBox(height: 24),
@@ -57,9 +57,9 @@ class LeaveScreen extends StatelessWidget {
 
               Text(
                 'Recent Requests',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
 
@@ -77,16 +77,16 @@ class LeaveScreen extends StatelessWidget {
                       Text(
                         'No leave requests yet',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textMuted,
-                            ),
+                          color: AppColors.textMuted,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Coming soon',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textMuted,
-                              fontStyle: FontStyle.italic,
-                            ),
+                          color: AppColors.textMuted,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ],
                   ),

@@ -90,8 +90,9 @@ class AppDialog {
                     child: ElevatedButton(
                       onPressed: () => Navigator.of(context).pop(true),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isDangerous ? AppColors.error : AppColors.primary,
+                        backgroundColor: isDangerous
+                            ? AppColors.error
+                            : AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(

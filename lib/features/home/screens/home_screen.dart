@@ -10,6 +10,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
+    final avatarUrl = user?.avatarUrl;
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -25,14 +27,17 @@ class HomeScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: AppColors.primary.withAlpha(25),
-                    child: Text(
-                      user?.initials ?? '?',
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                      ),
-                    ),
+                    backgroundImage: hasAvatar ? NetworkImage(avatarUrl) : null,
+                    child: !hasAvatar
+                        ? Text(
+                            user?.initials ?? '?',
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -41,16 +46,14 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Welcome back',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           user?.name ?? 'User',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -84,7 +87,8 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         Text(
                           "Today's Summary",
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -100,9 +104,8 @@ class HomeScreen extends StatelessWidget {
                           ),
                           child: Text(
                             'Not clocked in',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Colors.white70,
-                                ),
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(color: Colors.white70),
                           ),
                         ),
                       ],
@@ -136,9 +139,9 @@ class HomeScreen extends StatelessWidget {
               // Quick actions
               Text(
                 'Quick Actions',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
 
@@ -183,8 +186,8 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'Recent Activity',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   TextButton(
                     onPressed: () {},
@@ -226,8 +229,8 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       'No activity yet',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textMuted,
-                          ),
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -308,9 +311,9 @@ class _ActionTile extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ],
           ),

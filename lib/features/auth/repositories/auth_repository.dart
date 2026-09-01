@@ -8,7 +8,7 @@ import '../models/user_model.dart';
 class AuthRepository {
   final ApiClient _client;
 
-  AuthRepository({required ApiClient client}) : _client = client;
+  AuthRepository({required this._client});
 
   /// Sends credentials. Returns either tokens (OTP disabled) or
   /// a verification token (OTP required).
@@ -37,10 +37,7 @@ class AuthRepository {
   }) async {
     final response = await _client.post(
       ApiConstants.verifyOtp,
-      body: {
-        'verification_token': verificationToken,
-        'otp': otp,
-      },
+      body: {'verification_token': verificationToken, 'otp': otp},
     );
 
     return LoginSuccess.fromJson(response);

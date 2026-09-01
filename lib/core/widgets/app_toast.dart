@@ -15,7 +15,9 @@ class AppToast {
         content: Row(
           children: [
             Icon(
-              isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
+              isError
+                  ? Icons.error_outline_rounded
+                  : Icons.check_circle_outline_rounded,
               color: Colors.white,
               size: 20,
             ),
@@ -33,11 +35,11 @@ class AppToast {
           ],
         ),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: isError ? AppColors.error : const Color(0xFF10B981), // Elegant Emerald Green for Success
+        backgroundColor: isError
+            ? AppColors.error
+            : const Color(0xFF10B981), // Elegant Emerald Green for Success
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         duration: const Duration(seconds: 3),
       ),

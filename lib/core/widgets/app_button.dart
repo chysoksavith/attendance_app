@@ -35,9 +35,7 @@ class AppButton extends StatelessWidget {
               onPressed: isLoading ? null : onPressed,
               style: OutlinedButton.styleFrom(
                 foregroundColor: foregroundColor ?? AppColors.primary,
-                side: BorderSide(
-                  color: foregroundColor ?? AppColors.primary,
-                ),
+                side: BorderSide(color: foregroundColor ?? AppColors.primary),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -78,10 +76,7 @@ class AppButton extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ],
       );
@@ -89,10 +84,7 @@ class AppButton extends StatelessWidget {
 
     return Text(
       label,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      ),
+      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     );
   }
 }

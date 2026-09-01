@@ -42,10 +42,7 @@ class AppTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null) ...[
-          Text(
-            label!,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
+          Text(label!, style: Theme.of(context).textTheme.labelLarge),
           const SizedBox(height: 6),
         ],
         TextFormField(

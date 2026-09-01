@@ -17,15 +17,15 @@ class AttendanceScreen extends StatelessWidget {
               Text(
                 'Attendance',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Track your daily attendance',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                  color: AppColors.textSecondary,
+                ),
               ),
 
               const SizedBox(height: 32),
@@ -74,8 +74,8 @@ class AttendanceScreen extends StatelessWidget {
                       Text(
                         'Tap to clock in',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textMuted,
-                            ),
+                          color: AppColors.textMuted,
+                        ),
                       ),
 
                       const SizedBox(height: 8),
@@ -83,9 +83,9 @@ class AttendanceScreen extends StatelessWidget {
                       Text(
                         'Coming soon',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textMuted,
-                              fontStyle: FontStyle.italic,
-                            ),
+                          color: AppColors.textMuted,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ],
                   ),

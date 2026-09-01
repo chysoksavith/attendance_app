@@ -13,6 +13,8 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final user = auth.user;
+    final avatarUrl = user?.avatarUrl;
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -25,10 +27,8 @@ class ProfileScreen extends StatelessWidget {
               CircleAvatar(
                 radius: 40,
                 backgroundColor: AppColors.primary.withAlpha(25),
-                backgroundImage: (user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty)
-                    ? NetworkImage(user.avatarUrl!)
-                    : null,
-                child: (user?.avatarUrl == null || user!.avatarUrl!.isEmpty)
+                backgroundImage: hasAvatar ? NetworkImage(avatarUrl) : null,
+                child: !hasAvatar
                     ? Text(
                         user?.initials ?? '?',
                         style: const TextStyle(
@@ -42,16 +42,16 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 user?.name ?? 'User',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 4),
               Text(
                 user?.email ?? '',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
 
               const SizedBox(height: 28),
@@ -104,8 +104,8 @@ class ProfileScreen extends StatelessWidget {
                       _MenuItem(
                         icon: Icons.attach_file_rounded,
                         label: attachment.fileName,
-                        trailing: attachment.size != null 
-                            ? '${(attachment.size! / 1024).toStringAsFixed(1)} KB' 
+                        trailing: attachment.size != null
+                            ? '${(attachment.size! / 1024).toStringAsFixed(1)} KB'
                             : 'Unknown size',
                         onTap: () {
                           // TODO: View or download attachment
@@ -114,7 +114,6 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ],
-
 
               const SizedBox(height: 28),
 
@@ -134,7 +133,11 @@ class ProfileScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.logout_rounded, size: 18, color: AppColors.error),
+                      Icon(
+                        Icons.logout_rounded,
+                        size: 18,
+                        color: AppColors.error,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Sign Out',
@@ -231,17 +234,17 @@ class _MenuItem extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               ),
             ),
             if (trailing != null)
               Text(
                 trailing!,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMuted,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
               ),
             const SizedBox(width: 4),
             Icon(

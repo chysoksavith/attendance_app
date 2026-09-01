@@ -17,11 +17,7 @@ class AuthProvider extends ChangeNotifier {
   final AuthRepository _repository;
   final TokenStorage _tokenStorage;
 
-  AuthProvider({
-    required AuthRepository repository,
-    required TokenStorage tokenStorage,
-  })  : _repository = repository,
-        _tokenStorage = tokenStorage;
+  AuthProvider({required this._repository, required this._tokenStorage});
 
   // -- State -----------------------------------------------------------------
 
@@ -65,7 +61,9 @@ class AuthProvider extends ChangeNotifier {
     final cachedUser = await _tokenStorage.getUserData();
     if (cachedUser != null) {
       try {
-        _user = UserModel.fromJson(jsonDecode(cachedUser) as Map<String, dynamic>);
+        _user = UserModel.fromJson(
+          jsonDecode(cachedUser) as Map<String, dynamic>,
+        );
         _status = AuthStatus.authenticated;
         notifyListeners();
       } catch (_) {

@@ -1,9 +1,17 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 class ApiConstants {
-  // Base URL — change per environment
-  // Android emulator: use 10.0.2.2 (maps to host's 127.0.0.1)
-  // Chrome/Linux desktop: use 127.0.0.1 directly
-  // Physical device: use your machine's LAN IP
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  // Base URL — automatically resolves:
+  // - Android emulator: 10.0.2.2 (maps to host's 127.0.0.1)
+  // - Web / Linux desktop: 127.0.0.1
+  static String get baseUrl {
+    if (!kIsWeb && Platform.isAndroid) {
+      return 'http://10.0.2.2:8000';
+    }
+    return 'http://127.0.0.1:8000';
+  }
+
   static const String apiPrefix = '/api/v1';
 
   // Auth endpoints

@@ -6,10 +6,11 @@ class TokenStorage {
   final FlutterSecureStorage _storage;
 
   TokenStorage({FlutterSecureStorage? storage})
-      : _storage = storage ??
-            const FlutterSecureStorage(
-              aOptions: AndroidOptions(encryptedSharedPreferences: true),
-            );
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(encryptedSharedPreferences: true),
+          );
 
   // -- Access Token ----------------------------------------------------------
 

@@ -96,9 +96,9 @@ class _OtpInputState extends State<OtpInput> {
               maxLength: 1,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
               decoration: InputDecoration(
                 counterText: '',
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),

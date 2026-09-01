@@ -100,7 +100,10 @@ class _OtpScreenState extends State<OtpScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () {
             context.read<AuthProvider>().clearError();
             AppRouter.goBack(context);
@@ -121,24 +124,24 @@ class _OtpScreenState extends State<OtpScreen> {
                   Text(
                     'Verify Your Identity',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'We sent a verification code to',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     auth.maskedEmail ?? '***@***.com',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
 
                   const SizedBox(height: 32),
@@ -179,9 +182,8 @@ class _OtpScreenState extends State<OtpScreen> {
                           )
                         : Text(
                             'Resend code in ${_resendCountdown}s',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.textMuted,
-                                ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textMuted),
                           ),
                   ),
                 ],
@@ -193,4 +195,3 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 }
-

@@ -17,11 +17,15 @@ class AttachmentModel {
 
   factory AttachmentModel.fromJson(Map<String, dynamic> json) {
     return AttachmentModel(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      id: json['id'] is int
+          ? json['id'] as int
+          : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       fileName: json['file_name']?.toString() ?? '',
       url: json['url']?.toString() ?? '',
       mimeType: json['mime_type']?.toString(),
-      size: json['size'] is int ? json['size'] as int : int.tryParse(json['size']?.toString() ?? ''),
+      size: json['size'] is int
+          ? json['size'] as int
+          : int.tryParse(json['size']?.toString() ?? ''),
       collectionName: json['collection_name']?.toString(),
     );
   }

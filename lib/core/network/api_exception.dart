@@ -5,11 +5,7 @@ class ApiException implements Exception {
   final int? statusCode;
   final Map<String, List<String>> errors;
 
-  const ApiException(
-    this.message, {
-    this.statusCode,
-    this.errors = const {},
-  });
+  const ApiException(this.message, {this.statusCode, this.errors = const {}});
 
   /// True when the backend rejected the request with validation errors (422).
   bool get hasValidationErrors => errors.isNotEmpty;
