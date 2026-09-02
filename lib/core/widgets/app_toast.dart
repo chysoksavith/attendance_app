@@ -45,4 +45,12 @@ class AppToast {
       ),
     );
   }
+
+  static void showSuccess(BuildContext context, String message) {
+    show(context, message, isError: false);
+  }
+
+  static void showError(BuildContext context, String message) {
+    show(context, message, isError: true);
+  }
 }

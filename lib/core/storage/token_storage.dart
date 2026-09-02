@@ -54,6 +54,24 @@ class TokenStorage {
     await _storage.write(key: StorageKeys.userData, value: jsonString);
   }
 
+  // -- Theme & Language Preferences -----------------------------------------
+
+  Future<String?> getThemeMode() async {
+    return _storage.read(key: StorageKeys.themeMode);
+  }
+
+  Future<void> saveThemeMode(String mode) async {
+    await _storage.write(key: StorageKeys.themeMode, value: mode);
+  }
+
+  Future<String?> getLanguageCode() async {
+    return _storage.read(key: StorageKeys.languageCode);
+  }
+
+  Future<void> saveLanguageCode(String lang) async {
+    await _storage.write(key: StorageKeys.languageCode, value: lang);
+  }
+
   // -- Clear -----------------------------------------------------------------
 
   Future<void> clearAll() async {

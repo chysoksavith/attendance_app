@@ -29,6 +29,14 @@ class ApiClient {
     return _decode(response);
   }
 
+  Future<Map<String, dynamic>> put(
+    String path, {
+    Map<String, dynamic>? body,
+  }) async {
+    final response = await _send('PUT', path, body: body);
+    return _decode(response);
+  }
+
   // -- Internal --------------------------------------------------------------
 
   Future<http.Response> _send(
@@ -50,6 +58,10 @@ class ApiClient {
         case 'POST':
           response = await _client
               .post(uri, headers: headers, body: jsonEncode(body ?? {}))
+              .timeout(ApiConstants.receiveTimeout);
+        case 'PUT':
+          response = await _client
+              .put(uri, headers: headers, body: jsonEncode(body ?? {}))
               .timeout(ApiConstants.receiveTimeout);
         default:
           throw ApiException('Unsupported method: $method');

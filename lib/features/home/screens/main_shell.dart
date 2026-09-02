@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/i18n/app_translations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../attendance/screens/attendance_screen.dart';
 import '../../leave/screens/leave_screen.dart';
@@ -42,12 +43,19 @@ class _BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkCard : Colors.white,
         border: Border(
-          top: BorderSide(color: AppColors.border.withAlpha(80), width: 0.5),
+          top: BorderSide(
+            color: isDark
+                ? AppColors.darkBorder
+                : AppColors.border.withAlpha(80),
+            width: 0.5,
+          ),
         ),
       ),
       child: SafeArea(
@@ -56,28 +64,28 @@ class _BottomNav extends StatelessWidget {
             _NavTab(
               icon: Icons.home_outlined,
               activeIcon: Icons.home_rounded,
-              label: 'Home',
+              label: context.tr('home'),
               isActive: currentIndex == 0,
               onTap: () => onTap(0),
             ),
             _NavTab(
               icon: Icons.access_time_outlined,
               activeIcon: Icons.access_time_filled_rounded,
-              label: 'Attendance',
+              label: context.tr('attendance'),
               isActive: currentIndex == 1,
               onTap: () => onTap(1),
             ),
             _NavTab(
               icon: Icons.calendar_today_outlined,
               activeIcon: Icons.calendar_today_rounded,
-              label: 'Leave',
+              label: context.tr('leave'),
               isActive: currentIndex == 2,
               onTap: () => onTap(2),
             ),
             _NavTab(
               icon: Icons.person_outline_rounded,
               activeIcon: Icons.person_rounded,
-              label: 'Profile',
+              label: context.tr('profile'),
               isActive: currentIndex == 3,
               onTap: () => onTap(3),
             ),

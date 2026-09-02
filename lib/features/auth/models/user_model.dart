@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import '../../../core/constants/api_constants.dart';
 import 'attachment_model.dart';
 
 /// Mirrors the ERP's `Api\UserResource` response shape.
@@ -35,20 +38,35 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    int? parseInt(dynamic v) {
+      if (v == null) return null;
+      if (v is num) return v.toInt();
+      if (v is String) return int.tryParse(v);
+      return null;
+    }
+
+    bool parseBool(dynamic v, {bool defaultValue = true}) {
+      if (v == null) return defaultValue;
+      if (v is bool) return v;
+      if (v is num) return v != 0;
+      if (v is String) return v == '1' || v.toLowerCase() == 'true';
+      return defaultValue;
+    }
+
     return UserModel(
-      id: json['id'] as int,
-      companyId: json['company_id'] as int?,
-      departmentId: json['department_id'] as int?,
-      name: json['name'] as String? ?? '',
-      firstName: json['first_name'] as String?,
-      lastName: json['last_name'] as String?,
-      avatarUrl: json['avatar_url'] as String?,
-      email: json['email'] as String?,
-      phoneNumber: json['phone_number'] as String?,
-      userType: json['user_type'] as String?,
-      isActive: json['is_active'] as bool? ?? true,
-      hasMobileAccess: json['has_mobile_access'] as bool? ?? true,
-      birthDate: json['birth_date'] as String?,
+      id: parseInt(json['id']) ?? 0,
+      companyId: parseInt(json['company_id']),
+      departmentId: parseInt(json['department_id']),
+      name: json['name']?.toString() ?? '',
+      firstName: json['first_name']?.toString(),
+      lastName: json['last_name']?.toString(),
+      avatarUrl: json['avatar_url']?.toString(),
+      email: json['email']?.toString(),
+      phoneNumber: json['phone_number']?.toString(),
+      userType: json['user_type']?.toString(),
+      isActive: parseBool(json['is_active'], defaultValue: true),
+      hasMobileAccess: parseBool(json['has_mobile_access'], defaultValue: true),
+      birthDate: json['birth_date']?.toString(),
       attachments:
           (json['attachments'] as List<dynamic>?)
               ?.map((e) => AttachmentModel.fromJson(e as Map<String, dynamic>))
@@ -74,6 +92,23 @@ class UserModel {
       'birth_date': birthDate,
       'attachments': attachments.map((e) => e.toJson()).toList(),
     };
+  }
+
+  /// Resolves the full URL for the avatar, converting relative paths and localhost for Android emulator.
+  String? get resolvedAvatarUrl {
+    if (avatarUrl == null || avatarUrl!.trim().isEmpty) return null;
+    var url = avatarUrl!.trim();
+    if (url.startsWith('/')) {
+      return '${ApiConstants.baseUrl}$url';
+    }
+    if (!kIsWeb && Platform.isAndroid) {
+      if (url.contains('localhost:8000')) {
+        url = url.replaceAll('localhost:8000', '10.0.2.2:8000');
+      } else if (url.contains('127.0.0.1:8000')) {
+        url = url.replaceAll('127.0.0.1:8000', '10.0.2.2:8000');
+      }
+    }
+    return url;
   }
 
   /// Initials for avatar fallback (e.g. "JD" for "John Doe").
