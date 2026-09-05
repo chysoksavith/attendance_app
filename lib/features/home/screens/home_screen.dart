@@ -373,46 +373,66 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  static bool _isProcessingHomeAction = false;
+
   Future<void> _handleClockAction(
     BuildContext context,
     AttendanceProvider provider,
   ) async {
-    final isClockingOut = provider.isCheckedIn;
+    if (_isProcessingHomeAction || provider.isClocking) return;
 
-    final confirmed = await AppDialog.showConfirmation(
-      context: context,
-      title: isClockingOut ? 'Clock Out' : 'Clock In',
-      message: isClockingOut
-          ? 'Are you sure you want to clock out for today?'
-          : 'Are you sure you want to clock in now?',
-      confirmText: isClockingOut ? 'Clock Out' : 'Clock In',
-    );
-
-    if (confirmed != true) return;
-    if (!context.mounted) return;
-
-    final bool success;
-    if (isClockingOut) {
-      success = await provider.checkOut();
-    } else {
-      success = await provider.checkIn();
+    // Guard: Prevent double-click / accidental clock-out during cooldown
+    if (provider.isCheckedIn && provider.isClockLocked) {
+      AppToast.showWarning(
+        context,
+        context.tr('cooldown_warning', {
+          'seconds': '${provider.lockRemainingSeconds}',
+        }),
+      );
+      return;
     }
 
-    if (!context.mounted) return;
+    _isProcessingHomeAction = true;
+    try {
+      final isClockingOut = provider.isCheckedIn;
 
-    if (success) {
-      AppToast.showSuccess(
-        context,
-        isClockingOut
-            ? 'Clocked out successfully!'
-            : 'Clocked in successfully!',
-      );
-    } else {
-      AppDialog.showError(
+      final confirmed = await AppDialog.showConfirmation(
         context: context,
-        title: 'Action Failed',
-        message: provider.errorMessage ?? 'Unable to record attendance.',
+        title: isClockingOut ? context.tr('clock_out') : context.tr('clock_in'),
+        message: isClockingOut
+            ? context.tr('confirm_clock_out')
+            : context.tr('confirm_clock_in'),
+        confirmText: isClockingOut
+            ? context.tr('clock_out')
+            : context.tr('clock_in'),
       );
+
+      if (confirmed != true) return;
+      if (!context.mounted) return;
+
+      final bool success;
+      if (isClockingOut) {
+        success = await provider.checkOut();
+      } else {
+        success = await provider.checkIn();
+      }
+
+      if (!context.mounted) return;
+
+      if (success) {
+        AppToast.showSuccess(
+          context,
+          isClockingOut ? context.tr('clocked_out') : context.tr('clocked_in'),
+        );
+      } else {
+        AppDialog.showError(
+          context: context,
+          title: context.tr('request_status'),
+          message: provider.errorMessage ?? 'Unable to record attendance.',
+        );
+      }
+    } finally {
+      _isProcessingHomeAction = false;
     }
   }
 
@@ -511,6 +531,44 @@ class HomeScreen extends StatelessWidget {
     }
 
     if (attendance.isCheckedIn) {
+      if (attendance.isClockLocked) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF78350F) : const Color(0xFFD97706),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFD97706).withAlpha(50),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.lock_clock_rounded,
+                size: 15,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                context.tr('wait_seconds', {
+                  'seconds': '${attendance.lockRemainingSeconds}',
+                }),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
         decoration: BoxDecoration(

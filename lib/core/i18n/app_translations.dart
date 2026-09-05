@@ -46,6 +46,10 @@ class AppTranslations {
       'no_logs': 'No attendance records yet',
       'confirm_clock_in': 'Are you sure you want to clock in now?',
       'confirm_clock_out': 'Are you sure you want to clock out for today?',
+      'locked': 'Locked',
+      'wait_seconds': 'Wait {seconds}s',
+      'cooldown_active': 'Locked for 1 min to prevent accidental click',
+      'cooldown_warning': 'Please wait {seconds}s before clocking out.',
 
       // Leave Management
       'manage_leave_requests': 'Manage your leave requests',
@@ -59,14 +63,24 @@ class AppTranslations {
       'remaining': 'Remaining',
       'entitled': 'Entitled',
       'used': 'Used',
-      'retry': 'Retry',
       'pending': 'Pending',
+      'new_request': 'New Request',
+      'apply_leave': 'Apply Leave',
+      'leave_type': 'Leave Type',
+      'start_date': 'Start Date',
+      'end_date': 'End Date',
+      'reason': 'Reason',
+      'reason_hint': 'Explain the reason for leave...',
+      'submit_request': 'Submit Request',
+      'status': 'Status',
+      'approved_status': 'Approved',
+      'pending_status': 'Pending',
       'rejected': 'Rejected',
       'days': 'days',
 
       // Profile & Settings
-      'personal_info': 'Personal Info',
-      'employment': 'Employment',
+      'personal_info': 'Personal Information',
+      'employment': 'Employment Details',
       'attendance_history': 'Attendance History',
       'language': 'Language',
       'appearance': 'Appearance',
@@ -82,10 +96,10 @@ class AppTranslations {
       // General & Common
       'home': 'ទំព័រដើម',
       'attendance': 'វត្តមាន',
-      'leave': 'ការសុំច្បាប់',
+      'leave': 'ច្បាប់ឈប់សម្រាក',
       'profile': 'គណនី',
-      'welcome_back': 'សូមស្វាគមន៍មកកាន់',
-      'welcome': 'សួស្តី',
+      'welcome_back': 'សូមស្វាគមន៍មកវិញ',
+      'welcome': 'សូមស្វាគមន៍',
       'view_all': 'មើលទាំងអស់',
       'see_all': 'មើលទាំងអស់',
       'cancel': 'បោះបង់',
@@ -122,6 +136,10 @@ class AppTranslations {
       'no_logs': 'មិនទាន់មានកំណត់ត្រាវត្តមាននៅឡើយទេ',
       'confirm_clock_in': 'តើអ្នកប្រាកដជាចង់កត់ត្រាចូលឥឡូវនេះមែនទេ?',
       'confirm_clock_out': 'តើអ្នកប្រាកដជាចង់កត់ត្រាចេញសម្រាប់ថ្ងៃនេះមែនទេ?',
+      'locked': 'បានចាក់សោ',
+      'wait_seconds': 'រង់ចាំ {seconds}វិ',
+      'cooldown_active': 'បានចាក់សោ ១ នាទីដើម្បីការពារការចុចច្រឡំ',
+      'cooldown_warning': 'សូមរង់ចាំ {seconds} វិនាទី មុននឹងកត់ត្រាចេញ។',
 
       // Leave Management
       'manage_leave_requests': 'គ្រប់គ្រងសំណើសុំច្បាប់របស់អ្នក',
@@ -131,12 +149,22 @@ class AppTranslations {
       'personal_leave': 'ផ្ទាល់ខ្លួន',
       'recent_requests': 'សំណើថ្មីៗ',
       'no_leave_requests': 'មិនទាន់មានសំណើសុំច្បាប់នៅឡើយទេ',
-      'no_leave_balances': 'មិនទាន់មានទិន្នន័យសមតុល្យច្បាប់នៅឡើយទេ',
+      'no_leave_balances': 'មិនមានសមតុល្យច្បាប់នៅឡើយទេ',
       'remaining': 'នៅសល់',
       'entitled': 'សរុប',
       'used': 'បានប្រើ',
-      'retry': 'ព្យាយាមម្តងទៀត',
-      'pending': 'រង់ចាំការអនុម័ត',
+      'pending': 'កំពុងរង់ចាំ',
+      'new_request': 'សំណើថ្មី',
+      'apply_leave': 'ស្នើសុំច្បាប់',
+      'leave_type': 'ប្រភេទច្បាប់',
+      'start_date': 'កាលបរិច្ឆេទចាប់ផ្តើម',
+      'end_date': 'កាលបរិច្ឆេទបញ្ចប់',
+      'reason': 'មូលហេតុ',
+      'reason_hint': 'បញ្ជាក់អំពីមូលហេតុនៃការសុំច្បាប់...',
+      'submit_request': 'ដាក់ស្នើសំណើ',
+      'status': 'ស្ថានភាព',
+      'approved_status': 'បានអនុម័ត',
+      'pending_status': 'កំពុងរង់ចាំ',
       'rejected': 'បដិសេធ',
       'days': 'ថ្ងៃ',
 
@@ -156,14 +184,26 @@ class AppTranslations {
     },
   };
 
-  static String text(BuildContext context, String key) {
+  static String text(
+    BuildContext context,
+    String key, [
+    Map<String, String>? params,
+  ]) {
     final locale = Localizations.maybeLocaleOf(context)?.languageCode ?? 'en';
-    return _localizedValues[locale]?[key] ??
-        _localizedValues['en']?[key] ??
-        key;
+    var value =
+        _localizedValues[locale]?[key] ?? _localizedValues['en']?[key] ?? key;
+
+    if (params != null) {
+      params.forEach((paramKey, paramValue) {
+        value = value.replaceAll('{$paramKey}', paramValue);
+      });
+    }
+
+    return value;
   }
 }
 
 extension AppTranslationsExtension on BuildContext {
-  String tr(String key) => AppTranslations.text(this, key);
+  String tr(String key, [Map<String, String>? params]) =>
+      AppTranslations.text(this, key, params);
 }

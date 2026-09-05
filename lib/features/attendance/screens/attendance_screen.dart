@@ -19,6 +19,7 @@ class AttendanceScreen extends StatefulWidget {
 class _AttendanceScreenState extends State<AttendanceScreen> {
   late DateTime _currentTime;
   Timer? _timer;
+  bool _isProcessingAction = false;
 
   @override
   void initState() {
@@ -132,6 +133,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                         isCheckedIn: attendance.isCheckedIn,
                         isCheckedOut: attendance.isCheckedOut,
                         isClocking: attendance.isClocking,
+                        isLocked: attendance.isClockLocked,
+                        lockRemainingSeconds: attendance.lockRemainingSeconds,
                         onTap: () => _handleClockAction(context, attendance),
                       ),
 
@@ -286,42 +289,60 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     BuildContext context,
     AttendanceProvider provider,
   ) async {
-    final isClockingOut = provider.isCheckedIn;
+    if (_isProcessingAction || provider.isClocking) return;
 
-    final confirmed = await AppDialog.showConfirmation(
-      context: context,
-      title: isClockingOut ? 'Clock Out' : 'Clock In',
-      message: isClockingOut
-          ? 'Are you sure you want to clock out for today?'
-          : 'Are you sure you want to clock in now?',
-      confirmText: isClockingOut ? 'Clock Out' : 'Clock In',
-    );
-
-    if (confirmed != true) return;
-    if (!context.mounted) return;
-
-    final bool success;
-    if (isClockingOut) {
-      success = await provider.checkOut();
-    } else {
-      success = await provider.checkIn();
+    // Guard: Prevent double-click / accidental clock-out during cooldown
+    if (provider.isCheckedIn && provider.isClockLocked) {
+      AppToast.showWarning(
+        context,
+        context.tr('cooldown_warning', {
+          'seconds': '${provider.lockRemainingSeconds}',
+        }),
+      );
+      return;
     }
 
-    if (!context.mounted) return;
+    _isProcessingAction = true;
+    try {
+      final isClockingOut = provider.isCheckedIn;
 
-    if (success) {
-      AppToast.showSuccess(
-        context,
-        isClockingOut
-            ? 'Clocked out successfully!'
-            : 'Clocked in successfully!',
-      );
-    } else {
-      AppDialog.showError(
+      final confirmed = await AppDialog.showConfirmation(
         context: context,
-        title: 'Action Failed',
-        message: provider.errorMessage ?? 'Unable to record attendance.',
+        title: isClockingOut ? context.tr('clock_out') : context.tr('clock_in'),
+        message: isClockingOut
+            ? context.tr('confirm_clock_out')
+            : context.tr('confirm_clock_in'),
+        confirmText: isClockingOut
+            ? context.tr('clock_out')
+            : context.tr('clock_in'),
       );
+
+      if (confirmed != true) return;
+      if (!context.mounted) return;
+
+      final bool success;
+      if (isClockingOut) {
+        success = await provider.checkOut();
+      } else {
+        success = await provider.checkIn();
+      }
+
+      if (!context.mounted) return;
+
+      if (success) {
+        AppToast.showSuccess(
+          context,
+          isClockingOut ? context.tr('clocked_out') : context.tr('clocked_in'),
+        );
+      } else {
+        AppDialog.showError(
+          context: context,
+          title: context.tr('request_status'),
+          message: provider.errorMessage ?? 'Unable to record attendance.',
+        );
+      }
+    } finally {
+      _isProcessingAction = false;
     }
   }
 

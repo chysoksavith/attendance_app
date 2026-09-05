@@ -5,6 +5,8 @@ class ClockButton extends StatefulWidget {
   final bool isCheckedIn;
   final bool isCheckedOut;
   final bool isClocking;
+  final bool isLocked;
+  final int lockRemainingSeconds;
   final VoidCallback onTap;
 
   const ClockButton({
@@ -12,6 +14,8 @@ class ClockButton extends StatefulWidget {
     required this.isCheckedIn,
     required this.isCheckedOut,
     required this.isClocking,
+    this.isLocked = false,
+    this.lockRemainingSeconds = 0,
     required this.onTap,
   });
 
@@ -30,6 +34,24 @@ class _ClockButtonState extends State<ClockButton> {
     // Shift completed state (Accomplishment / Done)
     if (widget.isCheckedOut) {
       return _buildCompletedState(isDark);
+    }
+
+    // Cooldown Locked state: active right after clock-in to prevent accidental double-click
+    if (widget.isCheckedIn && widget.isLocked) {
+      return _buildActionButton(
+        isDark: isDark,
+        isInteractable: !widget.isClocking,
+        outerBg: isDark ? const Color(0xFF2E2215) : const Color(0xFFFEF3C7),
+        outerBorder: isDark ? const Color(0xFF78350F) : const Color(0xFFFDE68A),
+        gradientStart: const Color(0xFFD97706),
+        gradientEnd: const Color(0xFFB45309),
+        shadowColor: const Color(0xFFD97706).withAlpha(isDark ? 80 : 60),
+        icon: Icons.lock_clock_rounded,
+        title: context.tr('wait_seconds', {
+          'seconds': '${widget.lockRemainingSeconds}',
+        }),
+        subtitle: context.tr('locked'),
+      );
     }
 
     // Active state: Clock Out

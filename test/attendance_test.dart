@@ -172,22 +172,55 @@ void main() {
       expect(provider.isCheckedOut, false);
       expect(provider.canClockIn, false);
       expect(provider.canClockOut, true);
+      expect(provider.isClockLocked, true);
+      expect(provider.lockRemainingSeconds, greaterThan(0));
       expect(provider.history.length, 1);
     });
 
-    test('successful check-out completes attendance', () async {
+    test('cooldown lock prevents immediate check-out until unlocked', () async {
       await provider.checkIn(latitude: 11.5564, longitude: 104.9282);
+
+      // Attempting check-out during cooldown should fail
+      expect(provider.isClockLocked, true);
+      final blockedSuccess = await provider.checkOut(
+        latitude: 11.5564,
+        longitude: 104.9282,
+      );
+      expect(blockedSuccess, false);
+      expect(provider.errorMessage, contains('Please wait'));
+      expect(provider.isCheckedOut, false);
+
+      // Once unlocked, check-out succeeds
+      provider.unlockCooldownForTesting();
+      expect(provider.isClockLocked, false);
+
       final success = await provider.checkOut(
         latitude: 11.5564,
         longitude: 104.9282,
       );
-
       expect(success, true);
       expect(provider.isCheckedIn, true);
       expect(provider.isCheckedOut, true);
       expect(provider.canClockIn, false);
       expect(provider.canClockOut, false);
       expect(provider.isCompleted, true);
+    });
+
+    test('zero duration lock provider allows immediate check-out', () async {
+      final noLockProvider = AttendanceProvider(
+        repository: repository,
+        lockDurationSeconds: 0,
+      );
+      await noLockProvider.checkIn(latitude: 11.5564, longitude: 104.9282);
+      expect(noLockProvider.isClockLocked, false);
+      expect(noLockProvider.lockRemainingSeconds, 0);
+
+      final success = await noLockProvider.checkOut(
+        latitude: 11.5564,
+        longitude: 104.9282,
+      );
+      expect(success, true);
+      expect(noLockProvider.isCompleted, true);
     });
 
     test('failure updates errorMessage without crashing', () async {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../../core/services/location_service.dart';
 import '../models/attendance_model.dart';
@@ -8,9 +9,12 @@ enum AttendanceViewState { initial, loading, success, error }
 
 /// State management for employee attendance.
 class AttendanceProvider extends ChangeNotifier {
-  final AttendanceRepository _repository;
+  final AttendanceRepository repository;
+  final int lockDurationSeconds;
 
-  AttendanceProvider({required this._repository});
+  AttendanceProvider({required this.repository, this.lockDurationSeconds = 60});
+
+  AttendanceRepository get _repository => repository;
 
   // -- State -----------------------------------------------------------------
 
@@ -32,6 +36,10 @@ class AttendanceProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  Timer? _lockTimer;
+  DateTime? _lockUntil;
+  bool _cooldownUnlocked = false;
+
   // -- Computed Getters ------------------------------------------------------
 
   bool get isCheckedIn => _todayAttendance?.isCheckedIn ?? false;
@@ -39,6 +47,62 @@ class AttendanceProvider extends ChangeNotifier {
   bool get canClockIn => !isCheckedIn;
   bool get canClockOut => isCheckedIn && !isCheckedOut;
   bool get isCompleted => isCheckedIn && isCheckedOut;
+
+  /// Number of seconds remaining in clock-in lock/cooldown. 0 if not locked.
+  int get lockRemainingSeconds {
+    if (lockDurationSeconds <= 0 || _cooldownUnlocked) return 0;
+
+    // 1. Check active timer lock
+    if (_lockUntil != null) {
+      final diff = _lockUntil!.difference(DateTime.now()).inSeconds;
+      if (diff > 0) {
+        return diff;
+      } else {
+        _lockUntil = null;
+        _lockTimer?.cancel();
+        _lockTimer = null;
+        return 0;
+      }
+    }
+
+    // 2. Check if today's check-in was within the lock duration window
+    final checkInAt = _todayAttendance?.checkIn.at;
+    if (checkInAt != null && !isCheckedOut) {
+      final elapsed = DateTime.now().difference(checkInAt).inSeconds;
+      if (elapsed >= 0 && elapsed < lockDurationSeconds) {
+        _lockUntil = checkInAt.add(Duration(seconds: lockDurationSeconds));
+        _startLockTicker();
+        return lockDurationSeconds - elapsed;
+      }
+    }
+
+    return 0;
+  }
+
+  bool get isClockLocked => lockRemainingSeconds > 0;
+
+  void _startLockTicker() {
+    _lockTimer?.cancel();
+    _lockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_lockUntil == null || DateTime.now().isAfter(_lockUntil!)) {
+        _lockUntil = null;
+        timer.cancel();
+        _lockTimer = null;
+        notifyListeners();
+      } else {
+        notifyListeners();
+      }
+    });
+  }
+
+  /// Manually unlock cooldown (useful for testing or overrides)
+  void unlockCooldownForTesting() {
+    _lockTimer?.cancel();
+    _lockTimer = null;
+    _lockUntil = null;
+    _cooldownUnlocked = true;
+    notifyListeners();
+  }
 
   // -- Actions ---------------------------------------------------------------
 
@@ -60,6 +124,21 @@ class AttendanceProvider extends ChangeNotifier {
       final today = DateTime.now().toIso8601String().substring(0, 10);
       try {
         _todayAttendance = _history.firstWhere((r) => r.date == today);
+        if (_todayAttendance != null &&
+            _todayAttendance!.isCheckedIn &&
+            !_todayAttendance!.isCheckedOut &&
+            lockDurationSeconds > 0) {
+          final checkInAt = _todayAttendance!.checkIn.at;
+          if (checkInAt != null) {
+            final elapsed = DateTime.now().difference(checkInAt).inSeconds;
+            if (elapsed >= 0 && elapsed < lockDurationSeconds) {
+              _lockUntil = checkInAt.add(
+                Duration(seconds: lockDurationSeconds),
+              );
+              _startLockTicker();
+            }
+          }
+        }
       } catch (_) {
         _todayAttendance = null;
       }
@@ -125,6 +204,12 @@ class AttendanceProvider extends ChangeNotifier {
       _history.removeWhere((r) => r.id == record.id);
       _history.insert(0, record);
 
+      if (lockDurationSeconds > 0) {
+        _cooldownUnlocked = false;
+        _lockUntil = DateTime.now().add(Duration(seconds: lockDurationSeconds));
+        _startLockTicker();
+      }
+
       _state = AttendanceViewState.success;
       return true;
     } catch (e) {
@@ -148,6 +233,13 @@ class AttendanceProvider extends ChangeNotifier {
   }) async {
     if (_todayAttendance == null) {
       _errorMessage = 'No active check-in record found to check out.';
+      notifyListeners();
+      return false;
+    }
+
+    if (isClockLocked) {
+      _errorMessage =
+          'Please wait ${lockRemainingSeconds}s before clocking out.';
       notifyListeners();
       return false;
     }
@@ -191,6 +283,11 @@ class AttendanceProvider extends ChangeNotifier {
       );
 
       _todayAttendance = record;
+      // Clear any pending lock timer on check-out
+      _lockTimer?.cancel();
+      _lockTimer = null;
+      _lockUntil = null;
+
       // Update in history list
       final index = _history.indexWhere((r) => r.id == record.id);
       if (index >= 0) {
@@ -212,4 +309,11 @@ class AttendanceProvider extends ChangeNotifier {
 
   /// Refresh attendance data
   Future<void> refresh() => loadInitialData();
+
+  @override
+  void dispose() {
+    _lockTimer?.cancel();
+    _lockTimer = null;
+    super.dispose();
+  }
 }

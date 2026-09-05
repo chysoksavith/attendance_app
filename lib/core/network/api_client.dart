@@ -68,7 +68,14 @@ class ApiClient {
       }
 
       return response;
-    } on SocketException {
+    } on SocketException catch (e) {
+      if (e.osError?.errorCode == 111 ||
+          e.message.toLowerCase().contains('connection refused')) {
+        throw ApiException(
+          'Cannot connect to server at ${ApiConstants.baseUrl}. Make sure the backend server is running and port is forwarded.',
+          statusCode: 0,
+        );
+      }
       throw const ApiException(
         'No internet connection. Please check your network.',
         statusCode: 0,
